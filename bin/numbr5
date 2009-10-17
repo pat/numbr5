@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+require 'numbr5'
+
+EventMachine.run do
+  EventMachine.connect 'irc.railscampuk', 6667, Numbr5::Bot, *ARGV
+end

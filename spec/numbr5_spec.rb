@@ -1,7 +1,5 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require 'spec/spec_helper'
 
-describe "Numbr5" do
-  it "fails" do
-    fail "hey buddy, you should probably rename this file and start specing for real"
-  end
+describe Numbr5 do
+  #
 end
