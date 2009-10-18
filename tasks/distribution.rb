@@ -23,7 +23,9 @@ Jeweler::Tasks.new do |gem|
     'spec/**/*.rb'
   ]
   
-  gem.add_dependency 'eventmachine', '0.12.8'
+  gem.add_dependency 'eventmachine', '>= 0.12.8'
+  gem.add_dependency 'rest-client',  '>= 1.0.3'
+  gem.add_dependency 'json',         '>= 1.1.9'
   
   gem.add_development_dependency 'rspec'
   gem.add_development_dependency 'yard'

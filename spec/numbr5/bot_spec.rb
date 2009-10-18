@@ -70,16 +70,29 @@ describe Numbr5::Bot do
         @bot.receive_data ':pat!~pat@freelancing-god PRIVMSG numbr5 :hello?'
       end
       
-      it "should say hello" do
-        @bot.should_receive(:send_data) do |data|
-          data.should match(/:hello$/)
-        end
+      it "should provide beer stats if asked for" do
+        RestClient.stub!(
+          :get => '{"user":{"name":"pat","beers_owing":2,"beers_owed":0}}'
+        )
+        @bot.should_receive(:send_data).with('PRIVMSG pat :You owe 2 beers and are owed 0 beers')
         
-        @bot.receive_data ':pat!~pat@freelancing-god PRIVMSG numbr5 :hello?'
+        @bot.receive_data ':pat!~pat@freelancing-god PRIVMSG numbr5 :stats'
+      end
+      
+      it "should handle 404 errors if the user doesn't have any stats" do
+        RestClient.stub(:get).and_raise(RestClient::ResourceNotFound)
+        
+        @bot.should_receive(:send_data).with('PRIVMSG pat :You owe 0 beers and are owed 0 beers')
+        
+        @bot.receive_data ':pat!~pat@freelancing-god PRIVMSG numbr5 :stats'
       end
     end
     
     context 'PRIVMSG #channel' do
+      before :each do
+        RestClient.stub!(:post => true)
+      end
+      
       it "should not do anything if there was no action" do
         @bot.should_not_receive(:send_data)
         
@@ -96,6 +109,27 @@ describe Numbr5::Bot do
         @bot.should_receive(:send_data).
           with("PRIVMSG #spec :pat: you owe user a beer for action")
         @bot.receive_data ":pat!~pat@freelancing-god PRIVMSG #spec :\001ACTION thanks user for action"
+      end
+      
+      it "should create the beer via the API" do
+        RestClient.should_receive(:post) do |url, payload|
+          url.should == 'http://beer-totaller.com:3000/api/beers.json'
+          payload.should == {
+            :beer => {
+              :from   => 'pat',
+              :to     => 'user',
+              :reason => 'for action'
+            }
+          }
+        end
+        
+        @bot.receive_data ":pat!~pat@freelancing-god PRIVMSG #spec :\001ACTION thanks user for action"
+      end
+      
+      it "should send a warning if the from and to users are different" do
+        @bot.should_receive(:send_data).
+          with("PRIVMSG #spec :pat: no masturbation!")
+        @bot.receive_data ":pat!~pat@freelancing-god PRIVMSG #spec :\001ACTION thanks pat for action"
       end
     end
   end

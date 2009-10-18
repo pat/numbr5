@@ -41,7 +41,12 @@ module Numbr5
     end
     
     def private_message(user, message)
-      send_data "PRIVMSG #{user} :hello"
+      case message.strip
+      when 'stats'
+        stats user
+      else
+        send_data "PRIVMSG #{user} :hello"
+      end
     end
     
     def public_message(user, message)
@@ -60,7 +65,26 @@ module Numbr5
     end
     
     def thank(from, to, reason)
+      if from == to
+        send_data "PRIVMSG ##{channel} :#{from}: no masturbation!"
+        return
+      end
+      
+      RestClient.post 'http://beer-totaller.com:3000/api/beers.json', :beer => {
+        :from   => from,
+        :to     => to,
+        :reason => reason
+      }
       send_data "PRIVMSG ##{channel} :#{from}: you owe #{to} a beer #{reason}"
+    end
+    
+    def stats(user)
+      json = RestClient.get "http://beer-totaller.com:3000/api/users/#{user}.json"
+      json = JSON.parse json
+      
+      send_data "PRIVMSG #{user} :You owe #{json['user']['beers_owing']} beers and are owed #{json['user']['beers_owed']} beers"
+    rescue RestClient::ResourceNotFound
+      send_data "PRIVMSG #{user} :You owe 0 beers and are owed 0 beers"
     end
   end
 end
