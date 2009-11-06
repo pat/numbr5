@@ -8,7 +8,7 @@ module Numbr5
       @channel = channel
     end
     
-    def receive_data(data)
+    def receive_line(data)
       case data
       when /no ident/i
         identify_and_join
