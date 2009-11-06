@@ -6,24 +6,24 @@ describe Numbr5::Bot do
     @bot.stub!(:send_data => true)
   end
   
-  describe '#receive_data' do
+  describe '#receive_line' do
     context 'No Ident response' do
       it "should send the user nickname" do
         @bot.should_receive(:send_data).with("NICK numbr5")
         
-        @bot.receive_data '*** No Ident response'
+        @bot.receive_line '*** No Ident response'
       end
       
       it "should send the user details" do
         @bot.should_receive(:send_data).with("USER numbr5 0 * :Number 5")
         
-        @bot.receive_data '*** No Ident response'
+        @bot.receive_line '*** No Ident response'
       end
       
       it "should join the given channel" do
         @bot.should_receive(:send_data).with("JOIN #spec")
         
-        @bot.receive_data '*** No Ident response'
+        @bot.receive_line '*** No Ident response'
       end
     end
     
@@ -33,7 +33,7 @@ describe Numbr5::Bot do
           data.should match(/^PONG /)
         end
         
-        @bot.receive_data 'PING :default'
+        @bot.receive_line 'PING :default'
       end
       
       it "should direct the pong at a server" do
@@ -41,7 +41,7 @@ describe Numbr5::Bot do
           data.should match(/PONG :default/)
         end
         
-        @bot.receive_data 'PING :default'
+        @bot.receive_line 'PING :default'
       end
       
       it "should respect the given server name" do
@@ -49,7 +49,7 @@ describe Numbr5::Bot do
           data.should match(/PONG :spec/)
         end
         
-        @bot.receive_data 'PING :spec'
+        @bot.receive_line 'PING :spec'
       end
     end
     
@@ -59,7 +59,7 @@ describe Numbr5::Bot do
           data.should match(/^PRIVMSG/)
         end
         
-        @bot.receive_data ':pat!~pat@freelancing-god PRIVMSG numbr5 :hello?'
+        @bot.receive_line ':pat!~pat@freelancing-god PRIVMSG numbr5 :hello?'
       end
       
       it "should direct the message to the sender" do
@@ -67,7 +67,7 @@ describe Numbr5::Bot do
           data.should match(/^PRIVMSG pat/)
         end
         
-        @bot.receive_data ':pat!~pat@freelancing-god PRIVMSG numbr5 :hello?'
+        @bot.receive_line ':pat!~pat@freelancing-god PRIVMSG numbr5 :hello?'
       end
       
       it "should provide beer stats if asked for" do
@@ -76,7 +76,7 @@ describe Numbr5::Bot do
         )
         @bot.should_receive(:send_data).with('PRIVMSG pat :You owe 2 beers and are owed 0 beers')
         
-        @bot.receive_data ':pat!~pat@freelancing-god PRIVMSG numbr5 :stats'
+        @bot.receive_line ':pat!~pat@freelancing-god PRIVMSG numbr5 :stats'
       end
       
       it "should handle 404 errors if the user doesn't have any stats" do
@@ -84,7 +84,7 @@ describe Numbr5::Bot do
         
         @bot.should_receive(:send_data).with('PRIVMSG pat :You owe 0 beers and are owed 0 beers')
         
-        @bot.receive_data ':pat!~pat@freelancing-god PRIVMSG numbr5 :stats'
+        @bot.receive_line ':pat!~pat@freelancing-god PRIVMSG numbr5 :stats'
       end
     end
     
@@ -96,19 +96,19 @@ describe Numbr5::Bot do
       it "should not do anything if there was no action" do
         @bot.should_not_receive(:send_data)
         
-        @bot.receive_data ':pat!~pat@freelancing-god PRIVMSG #spec :cough'
+        @bot.receive_line ':pat!~pat@freelancing-god PRIVMSG #spec :cough'
       end
       
       it "should ignore actions that aren't thanks" do
         @bot.should_not_receive(:send_data)
         
-        @bot.receive_data ":pat!~pat@freelancing-god PRIVMSG #spec :\001ACTION wave"
+        @bot.receive_line ":pat!~pat@freelancing-god PRIVMSG #spec :\001ACTION wave"
       end
       
       it "should confirm thanks" do
         @bot.should_receive(:send_data).
           with("PRIVMSG #spec :pat: you owe user a beer for action")
-        @bot.receive_data ":pat!~pat@freelancing-god PRIVMSG #spec :\001ACTION thanks user for action"
+        @bot.receive_line ":pat!~pat@freelancing-god PRIVMSG #spec :\001ACTION thanks user for action"
       end
       
       it "should create the beer via the API" do
@@ -123,13 +123,13 @@ describe Numbr5::Bot do
           }
         end
         
-        @bot.receive_data ":pat!~pat@freelancing-god PRIVMSG #spec :\001ACTION thanks user for action"
+        @bot.receive_line ":pat!~pat@freelancing-god PRIVMSG #spec :\001ACTION thanks user for action"
       end
       
       it "should send a warning if the from and to users are different" do
         @bot.should_receive(:send_data).
           with("PRIVMSG #spec :pat: no masturbation!")
-        @bot.receive_data ":pat!~pat@freelancing-god PRIVMSG #spec :\001ACTION thanks pat for action"
+        @bot.receive_line ":pat!~pat@freelancing-god PRIVMSG #spec :\001ACTION thanks pat for action"
       end
     end
   end
