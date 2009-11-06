@@ -10,7 +10,7 @@ module Numbr5
     
     def receive_data(data)
       case data
-      when /No Ident response/
+      when /no ident/i
         identify_and_join
       when /^PING /
         pong data.gsub(/^PING /i, '')
@@ -70,7 +70,7 @@ module Numbr5
         return
       end
       
-      RestClient.post 'http://beer-totaller.com:3000/api/beers.json', :beer => {
+      RestClient.post 'http://localhost:3000/api/beers.json', :beer => {
         :from   => from,
         :to     => to,
         :reason => reason
@@ -79,7 +79,7 @@ module Numbr5
     end
     
     def stats(user)
-      json = RestClient.get "http://beer-totaller.com:3000/api/users/#{user}.json"
+      json = RestClient.get "http://localhost:3000/api/users/#{user}.json"
       json = JSON.parse json
       
       send_data "PRIVMSG #{user} :You owe #{json['user']['beers_owing']} beers and are owed #{json['user']['beers_owed']} beers"

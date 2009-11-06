@@ -113,7 +113,7 @@ describe Numbr5::Bot do
       
       it "should create the beer via the API" do
         RestClient.should_receive(:post) do |url, payload|
-          url.should == 'http://beer-totaller.com:3000/api/beers.json'
+          url.should == 'http://localhost:3000/api/beers.json'
           payload.should == {
             :beer => {
               :from   => 'pat',

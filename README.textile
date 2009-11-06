@@ -12,6 +12,22 @@ Specify a channel name without the hash suffix.
 
 <pre><code>numbr5 railscamp</code></pre>
 
+In the channel, if you thank someone (using emotes/actions) for something, then you have a beer logged from you to that person.
+
+<pre><code>/me thanks ben_a for running rails camps</code></pre>
+
+Currently, the order must be "/me thanks [username] [reason]". If you can figure out a way to make this flexible and smart, please fork.
+
+You'll also need the website running as well, otherwise there'll be no API around to use.
+
+h2. Limitations
+
+Currently hard-coded to irc.freenode.net on port 6667, and only accepts one channel. I'd like it to support multiple channels, and specify the server, so multiple bots can be running for different servers.
+
+It's also expecting the corresponding website to be hosted locally and running on port 3000. This is far from ideal - a patch to make the bot understand the concepts of environments would be fantastic.
+
+What also would be cool is the concept of a source for each thank-you - ie: IRC/channel. This way, the service could be extended beyond just IRC (although there's already a few Twitter-equivalents out there).
+
 h2. Copyright
 
-Copyright (c) 2009 Pat Allan, and released under an MIT License. Inspired by Lachie Cox's numbr5 bot for the #roro channel on irc.freenode.net, and initially built at Rails Camp UK 2, October 2009.
+Copyright (c) 2009 Pat Allan, and released under an MIT License. Heavily inspired by "Lachie Cox's":http://smartbomb.com.au/ "numbr5 bot":http://github.com/lachie/numbr5 for the #roro channel on irc.freenode.net. This new version was initially built at "Rails Camp UK 2":http://railscamps.com, October 2009.

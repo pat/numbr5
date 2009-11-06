@@ -2,5 +2,5 @@
 require 'numbr5'
 
 EventMachine.run do
-  EventMachine.connect 'irc.railscampuk', 6667, Numbr5::Bot, *ARGV
+  EventMachine.connect 'irc.freenode.net', 6667, Numbr5::Bot, *ARGV
 end
